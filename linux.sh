@@ -246,13 +246,10 @@ Signed-By: /etc/apt/keyrings/docker.asc
 EOF
         apt update && apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     fi
+    # docker 配置
     tee /etc/docker/daemon.json <<EOF
 {
-  "registry-mirrors": [
-    "https://docker.1panel.live/",
-    "https://docker.m.daocloud.io/",
-    "https://docker.1ms.run/"
-  ],
+  "registry-mirrors": ["https://xjcss9ci.mirror.aliyuncs.com"]
   "live-restore": true,
   "ipv6": true,
   "ip6tables": true,
@@ -264,6 +261,14 @@ EOF
   },
   "experimental": true
 }
+EOF
+    # docker 镜像拉取代理全局设置
+    mkdir /etc/systemd/system/docker.service.d/
+    tee /etc/systemd/system/docker.service.d/http-proxy.conf <<EOF
+[Service]
+Environment="HTTP_PROXY=http://127.0.0.1:7890"
+Environment="HTTPS_PROXY=http://127.0.0.1:7890"
+Environment="NO_PROXY=.aliyuncs.com,.edu.cn,127.0.0.1,.localhost,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
 EOF
     systemctl daemon-reload && systemctl restart docker && systemctl enable docker
     # usermod -aG docker $USER
@@ -331,14 +336,14 @@ EOF
     # nodejs
     npm config set registry ${nodejs_registry} 2>/dev/null
     npm config set disturl ${nodejs_disturl} 2>/dev/null
-    # rust
 
+    # rust
     export RUSTUP_DIST_SERVER='https://mirrors.huaweicloud.com/rustup/'
     export RUSTUP_UPDATE_ROOT='https://mirrors.huaweicloud.com/rustup/rustup/'
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
     mkdir ~/.cargo/
-    cat > ~/.cargo/config.toml <<EOF
+    tee ~/.cargo/config.toml <<EOF
 [source.crates-io]
 replace-with = 'ustc'
 
@@ -356,9 +361,15 @@ EOF
 }
 
 function config_debian_custom() {
-    # apt install -y fcitx fcitx-googlepinyin vim git curl
+    # apt install -y fcitx5 fcitx5-chinese-addons vim git curl
     # usermod -aG sudo debian
     
+    # 安装拼音
+    apt install -y fcitx5 fcitx5-chinese-addons
+    mkdir /usr/share/fcitx5/pinyin/dictionaries
+    # https://github.com/wuhgit/CustomPinyinDictionary/releases/download/assets/CustomPinyinDictionary_Fcitx.dict
+    mv CustomPinyinDictionary_Fcitx.dict /usr/share/fcitx5/pinyin/dictionaries
+
     # Rust
     export RUSTUP_DIST_SERVER=${rustup}
     export RUSTUP_UPDATE_ROOT=${rustup}
