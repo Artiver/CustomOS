@@ -10,5 +10,5 @@ RUN sed -i 's@//.*.ubuntu.com@//mirrors.ustc.edu.cn@g' /etc/apt/sources.list.d/u
 # make -j 16
 
 # make clean
-# make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j 16
+# make LDFLAGS="-s -w -Wl,--build-id=none" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j 16
 
