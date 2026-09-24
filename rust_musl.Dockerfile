@@ -28,9 +28,10 @@ git-fetch-with-cli = true
 EOF
 
 ARG DIR="/root"
-ARG X86_64="x86-64--musl--stable-2026.08-1"
-ARG ARM64="aarch64--musl--stable-2026.08-1"
-ARG ARM64_BE="aarch64be--musl--stable-2026.08-1"
+ARG VERSION="2026.08-1"
+ARG X86_64="x86-64--musl--stable-${VERSION}"
+ARG ARM64="aarch64--musl--stable-${VERSION}"
+ARG ARM64_BE="aarch64be--musl--stable-${VERSION}"
 
 ADD ${X86_64}.tar.xz ${DIR}
 ADD ${ARM64}.tar.xz ${DIR}

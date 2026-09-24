@@ -28,10 +28,11 @@ git-fetch-with-cli = true
 EOF
 
 ARG DIR="/root"
-ARG X86_64="x86-64--glibc--stable-2026.08-1"
-ARG ARM64="aarch64--glibc--stable-2026.08-1"
-ARG ARM64_BE="aarch64be--glibc--stable-2026.08-1"
-ARG POWERPC64_E5500="powerpc64-e5500--glibc--stable-2026.08-1"
+ARG VERSION="2026.08-1"
+ARG X86_64="x86-64--glibc--stable-${VERSION}"
+ARG ARM64="aarch64--glibc--stable-${VERSION}"
+ARG ARM64_BE="aarch64be--glibc--stable-${VERSION}"
+ARG POWERPC64_E5500="powerpc64-e5500--glibc--stable-${VERSION}"
 
 ADD ${X86_64}.tar.xz ${DIR}
 ADD ${ARM64}.tar.xz ${DIR}
@@ -45,4 +46,4 @@ echo "export PATH=\$PATH:${DIR}/${ARM64_BE}/bin" >> /root/.bashrc && \
 echo "export PATH=\$PATH:${DIR}/${POWERPC64_E5500}/bin" >> /root/.bashrc
 
 RUN apt -y install build-essential
-RUN ["/bin/bash", "-ic", "rustup target add aarch64-unknown-linux-gnu"]
+RUN ["/bin/bash", "-ic", "rustup target add aarch64-unknown-linux-gnu powerpc64-unknown-linux-gnu"]
