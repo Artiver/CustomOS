@@ -27,6 +27,22 @@ index = "https://rsproxy.cn/crates.io-index"
 git-fetch-with-cli = true
 EOF
 
-RUN apt -y install --no-install-recommends build-essential
-RUN apt -y install gcc-aarch64-linux-gnu
-RUN ["/bin/bash", "-ic", "rustup target add aarch64-unknown-linux-gnu aarch64-unknown-linux-musl x86_64-unknown-linux-musl"]
+ARG DIR="/root"
+ARG X86_64="x86-64--glibc--stable-2026.08-1"
+ARG ARM64="aarch64--glibc--stable-2026.08-1"
+ARG ARM64_BE="aarch64be--glibc--stable-2026.08-1"
+ARG POWERPC64_E5500="powerpc64-e5500--glibc--stable-2026.08-1"
+
+ADD ${X86_64}.tar.xz ${DIR}
+ADD ${ARM64}.tar.xz ${DIR}
+ADD ${ARM64_BE}.tar.xz ${DIR}
+ADD ${POWERPC64_E5500}.tar.xz ${DIR}
+
+RUN chown -R root:root /root && \
+echo "export PATH=\$PATH:${DIR}/${X86_64}/bin" >> /root/.bashrc && \
+echo "export PATH=\$PATH:${DIR}/${ARM64}/bin" >> /root/.bashrc && \
+echo "export PATH=\$PATH:${DIR}/${ARM64_BE}/bin" >> /root/.bashrc && \
+echo "export PATH=\$PATH:${DIR}/${POWERPC64_E5500}/bin" >> /root/.bashrc
+
+RUN apt -y install build-essential
+RUN ["/bin/bash", "-ic", "rustup target add aarch64-unknown-linux-gnu"]
