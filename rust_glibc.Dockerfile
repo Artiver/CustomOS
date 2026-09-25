@@ -28,22 +28,24 @@ git-fetch-with-cli = true
 EOF
 
 ARG DIR="/root"
+ARG CONFIG="/root/.bashrc"
 ARG VERSION="2026.08-1"
+ARG SUFFIX=".tar.xz"
 ARG X86_64="x86-64--glibc--stable-${VERSION}"
 ARG ARM64="aarch64--glibc--stable-${VERSION}"
 ARG ARM64_BE="aarch64be--glibc--stable-${VERSION}"
 ARG POWERPC64_E5500="powerpc64-e5500--glibc--stable-${VERSION}"
 
-ADD ${X86_64}.tar.xz ${DIR}
-ADD ${ARM64}.tar.xz ${DIR}
-ADD ${ARM64_BE}.tar.xz ${DIR}
-ADD ${POWERPC64_E5500}.tar.xz ${DIR}
+ADD --chown=root:root ${X86_64}${SUFFIX} ${DIR}
+ADD --chown=root:root ${ARM64}${SUFFIX} ${DIR}
+ADD --chown=root:root ${ARM64_BE}${SUFFIX} ${DIR}
+ADD --chown=root:root ${POWERPC64_E5500}${SUFFIX} ${DIR}
 
-RUN chown -R root:root /root && \
-echo "export PATH=\$PATH:${DIR}/${X86_64}/bin" >> /root/.bashrc && \
-echo "export PATH=\$PATH:${DIR}/${ARM64}/bin" >> /root/.bashrc && \
-echo "export PATH=\$PATH:${DIR}/${ARM64_BE}/bin" >> /root/.bashrc && \
-echo "export PATH=\$PATH:${DIR}/${POWERPC64_E5500}/bin" >> /root/.bashrc
+RUN echo && \
+echo "export PATH=\$PATH:${DIR}/${X86_64}/bin" >> ${CONFIG} && \
+echo "export PATH=\$PATH:${DIR}/${ARM64}/bin" >> ${CONFIG} && \
+echo "export PATH=\$PATH:${DIR}/${ARM64_BE}/bin" >> ${CONFIG} && \
+echo "export PATH=\$PATH:${DIR}/${POWERPC64_E5500}/bin" >> ${CONFIG}
 
 RUN apt -y install build-essential
 RUN ["/bin/bash", "-ic", "rustup target add aarch64-unknown-linux-gnu powerpc64-unknown-linux-gnu"]
